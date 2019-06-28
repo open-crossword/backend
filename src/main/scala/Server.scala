@@ -1,7 +1,9 @@
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.model.{HttpResponse, StatusCode, StatusCodes}
 import akka.http.scaladsl.server.{HttpApp, Route}
 import spray.json._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
+
 import scala.util.Random
 
 object Server extends HttpApp with DefaultJsonProtocol with SprayJsonSupport {
@@ -16,15 +18,20 @@ object Server extends HttpApp with DefaultJsonProtocol with SprayJsonSupport {
             val picks = for (_ <- 1 to 8) yield {
               val puzzle = puzzles(Random.nextInt(puzzles.length))
               Map(
-                "name" -> os.RelPath(puzzle.path).baseName,
+                "id" -> puzzle.id,
                 "puzzle" -> puzzle.fullText,
               )
             }
             complete(picks.toJson)
           }
         },
-        encodeResponse {
-          getFromDirectory(loader.xdPath.toString())
+        pathPrefix(Segment) { puzzleId =>
+          encodeResponse {
+            puzzles.find(_.id == puzzleId) match {
+              case Some(puzzle) => complete(puzzle.fullText)
+              case None => complete(HttpResponse(status = StatusCodes.NotFound))
+            }
+          }
         }
       )
     }

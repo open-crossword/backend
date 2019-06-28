@@ -8,7 +8,8 @@ case class Puzzle(date: Option[Date],
                   editor: Option[String],
                   publication : Option[String],
                   fullText: String,
-                  path: String
+                  path: String,
+                  id: String
                  )
 
 class PuzzleLoader {
@@ -47,7 +48,8 @@ class PuzzleLoader {
           map.get("Editor"),
           publicationForPath(filePath.toString()),
           rawPuzzle,
-          filePath.relativeTo(xdPath).toString()
+          filePath.relativeTo(xdPath).toString(),
+          filePath.baseName,
         )
       }
     }.toRight(filePath)
