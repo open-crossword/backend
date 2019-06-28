@@ -19,7 +19,9 @@ libraryDependencies ++= Seq(
   "com.lihaoyi" %% "requests" % "0.2.0",
   "com.lihaoyi" %% "os-lib" % "0.3.0",
 
-  "com.typesafe.akka" %% "akka-testkit" % akkaVersion
+  "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+
+  "ch.megard" %% "akka-http-cors" % "0.4.1"
 )
 
 
