@@ -24,7 +24,7 @@ class PuzzleLoader {
     os.write(xdZipPath, r.data.bytes)
     try {
       println("unzipping...")
-      os.proc("unzip", "xd-public.zip").spawn(cwd = puzzlesHome).wait()
+      os.proc("unzip", "xd-public.zip").spawn(cwd = puzzlesHome).waitFor(100000)
       println("done")
     } finally {
       os.remove(xdZipPath)
