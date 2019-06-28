@@ -14,15 +14,19 @@ object Server extends HttpApp with DefaultJsonProtocol with SprayJsonSupport {
     pathPrefix("puzzles") {
       concat(
         pathEndOrSingleSlash {
-          get {
-            val picks = for (_ <- 1 to 8) yield {
-              val puzzle = puzzles(Random.nextInt(puzzles.length))
-              Map(
-                "id" -> puzzle.id,
-                "puzzle" -> puzzle.fullText,
-              )
+          parameter('n.?) { maybeN =>
+            get {
+              // arbitrary max results per query
+              val howMany = maybeN.flatMap(_.toIntOption).getOrElse(1) min 32
+              val picks = for (_ <- 1 to howMany) yield {
+                val puzzle = puzzles(Random.nextInt(puzzles.length))
+                Map(
+                  "id" -> puzzle.id,
+                  "puzzle" -> puzzle.fullText,
+                )
+              }
+              complete(picks.toJson)
             }
-            complete(picks.toJson)
           }
         },
         pathPrefix(Segment) { puzzleId =>
