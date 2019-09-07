@@ -33,7 +33,7 @@ libraryDependencies ++= Seq(
 
 // Akka TestKit
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-stream-typed-testkit" % akkaVersion,
+//  "com.typesafe.akka" %% "akka-stream-typed-testkit" % akkaVersion,
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion
 )
 
