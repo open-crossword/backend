@@ -1,0 +1,10 @@
+language: scala
+scala:
+  - 2.13.0
+services:
+  - docker
+deploy:
+  - provider: script
+    script: bash scripts/deploy.sh production
+    on:
+      branch: master

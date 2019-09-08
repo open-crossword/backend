@@ -6,24 +6,42 @@ scalaVersion := "2.13.0"
 
 
 lazy val akkaHttpVersion = "10.1.8"
-lazy val akkaVersion = "2.6.0-M3"
+lazy val akkaVersion = "2.6.0-M7"
 libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpVersion,
   "com.typesafe.akka" %% "akka-http-xml" % akkaHttpVersion,
-  "com.typesafe.akka" %% "akka-stream" % akkaVersion,
-  "com.typesafe.akka" %% "akka-actor" % akkaVersion,
+
+  "com.typesafe.akka" %% "akka-stream-typed" % akkaVersion,
+  "com.typesafe.akka" %% "akka-actor-typed" % akkaVersion,
 
   "org.typelevel" %% "cats-core" % "2.0.0-M4",
 
   "com.lihaoyi" %% "requests" % "0.2.0",
   "com.lihaoyi" %% "os-lib" % "0.3.0",
 
-  "com.typesafe.akka" %% "akka-testkit" % akkaVersion,
+  "ch.megard" %% "akka-http-cors" % "0.4.1",
 
-  "ch.megard" %% "akka-http-cors" % "0.4.1"
+  "org.slf4j" % "slf4j-simple" % "1.7.27"
 )
 
+// ScalaTest
+libraryDependencies ++= Seq(
+  "org.scalactic" %% "scalactic" % "3.0.8",
+  "org.scalatest" %% "scalatest" % "3.0.8" % "test"
+)
+
+// Akka TestKit
+libraryDependencies ++= Seq(
+  "com.typesafe.akka" %% "akka-stream-testkit" % akkaVersion,
+  "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion
+)
+
+enablePlugins(JavaAppPackaging)
+dockerExposedPorts := Seq(8080)
+packageName in Docker := "crosssword-server"
+dockerRepository := Some("opencrossword")
+dockerUpdateLatest := true
 
 // shamelessly stolen from doobie's build.sbt because cats was giving me lip
 // I'm sure we don't really need all of this
