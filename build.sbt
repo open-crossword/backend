@@ -37,6 +37,12 @@ libraryDependencies ++= Seq(
   "com.typesafe.akka" %% "akka-http-testkit" % akkaHttpVersion
 )
 
+enablePlugins(JavaAppPackaging)
+dockerExposedPorts := Seq(8080)
+packageName in Docker := "crosssword-server"
+dockerRepository := Some("opencrossword")
+dockerUpdateLatest := true
+
 // shamelessly stolen from doobie's build.sbt because cats was giving me lip
 // I'm sure we don't really need all of this
 lazy val compilerFlags = Seq(

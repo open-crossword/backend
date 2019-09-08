@@ -8,7 +8,7 @@ object WebServer extends HttpApp with DefaultJsonProtocol with SprayJsonSupport 
   override protected def routes: Route = cors() {
     concat(
       (pathEndOrSingleSlash & get) {
-        complete("hello world")
+        complete("hello squirrel")
       },
       (pathPrefix("puzzles") & pathEndOrSingleSlash & get) {
         complete("hello puzzles")
@@ -19,6 +19,6 @@ object WebServer extends HttpApp with DefaultJsonProtocol with SprayJsonSupport 
   }
 
   def main(args: Array[String]): Unit = {
-    WebServer.startServer("localhost", 8080)
+    WebServer.startServer("0.0.0.0", 8080)
   }
 }
