@@ -8,3 +8,6 @@ deploy:
     script: bash scripts/deploy.sh production
     on:
       branch: master
+branches:
+  only:
+    - master
