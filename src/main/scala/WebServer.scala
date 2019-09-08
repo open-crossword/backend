@@ -5,7 +5,7 @@ import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
 
 object WebServer extends HttpApp with DefaultJsonProtocol with SprayJsonSupport {
 
-  override protected def routes: Route = cors() {
+  override def routes: Route = cors() {
     concat(
       (pathEndOrSingleSlash & get) {
         complete("hello squirrel")
