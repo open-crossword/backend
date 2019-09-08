@@ -3,8 +3,8 @@ scala:
   - 2.13.0
 services:
   - docker
-before_script:
-  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-script:
-  - sbt ++$TRAVIS_SCALA_VERSION test
-  - sbt ++$TRAVIS_SCALA_VERSION docker:publish
+deploy:
+  - provider: script
+    script: bash scripts/deploy.sh production
+    on:
+      branch: master
