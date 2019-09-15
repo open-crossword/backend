@@ -20,7 +20,7 @@ class PuzzleTest extends FlatSpec with Matchers {
         assert(p.copyright.contains("© 1917 Boston Globe"))
         assert(p.publication.contains("bostonglobe"))
         assert(p.rawText == xdString)
-        assert(p.id == path)
+        assert(p.id == Puzzle.md5(path))
       case None => fail()
     }
   }
