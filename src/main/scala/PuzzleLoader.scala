@@ -1,25 +1,27 @@
 import scala.collection.parallel.CollectionConverters._
 import data.Puzzle
-
 import java.io.IOException
-import java.net.URI
-import java.nio.file.{FileSystems, Files, Path, Paths}
+import java.nio.file.{FileSystems, Files, Path}
+import java.nio.file.StandardCopyOption._
+import scala.jdk.CollectionConverters._
+import scala.jdk.StreamConverters._
 
 object PuzzleLoader {
   def load(): List[data.Puzzle] = {
-    val folderURL = getClass.getResource("/puzzles.zip")
-    extractAll(folderURL.toURI)
+    val puzzles = getClass.getResourceAsStream("/puzzles.zip")
+    val temp = os.temp().toNIO
+    Files.copy(puzzles, temp, REPLACE_EXISTING)
+    extractAll(temp)
   }
 
   @throws[IOException]
-  private def extractAll(fromZip: URI): List[data.Puzzle] = {
-    import scala.jdk.CollectionConverters._
-    import scala.jdk.StreamConverters._
-    val fs = FileSystems.newFileSystem(Paths.get(fromZip.getPath), null)
-    val files: List[Path] = fs.getRootDirectories.asScala.toList.flatMap(path =>
-      Files.walk(path).toScala(List).filterNot(Files.isDirectory(_))
-    )
+  private def extractAll(zipPath: Path): List[data.Puzzle] = {
+    val fs = FileSystems.newFileSystem(zipPath, null)
+    val files = fs.getRootDirectories.asScala.flatMap { path =>
+      Files.walk(path).toScala(Seq).filterNot(Files.isDirectory(_))
+    }
 
+    val startTime = System.currentTimeMillis()
     println("starting parse")
     val result = files.par.flatMap { path =>
       val contents = new String(Files.readAllBytes(path))
@@ -28,8 +30,9 @@ object PuzzleLoader {
         println(s"failed to parse file ${path.getFileName}")
       }
       puzzle
-    }
-    println("done parsing")
-    result.toList
+    }.toList
+    val elapsedTime = System.currentTimeMillis() - startTime
+    println(s"parsed ${result.length} files in ${elapsedTime}ms")
+    result
   }
 }
