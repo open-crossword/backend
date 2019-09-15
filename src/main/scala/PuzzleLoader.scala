@@ -11,7 +11,6 @@ object PuzzleLoader {
     extractAll(folderURL.toURI)
   }
 
-
   @throws[IOException]
   private def extractAll(fromZip: URI): List[data.Puzzle] = {
     import scala.jdk.CollectionConverters._
@@ -34,5 +33,3 @@ object PuzzleLoader {
     result.toList
   }
 }
-
-

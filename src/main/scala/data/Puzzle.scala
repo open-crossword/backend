@@ -52,7 +52,6 @@ object Puzzle {
     hashedString
   }
 
-
   private def parseDate(value: String): Option[Date] =
     value.split('-') match {
       case Array(Int(year), Int(month), Int(day)) => Some(Date(day, month, year))

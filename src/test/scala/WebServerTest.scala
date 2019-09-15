@@ -5,7 +5,6 @@ import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 
 class WebServerTest extends FlatSpec with Matchers with ScalatestRouteTest with DefaultJsonProtocol with SprayJsonSupport {
 
-
   behavior of "The /puzzles endpoint"
 
   it should "give us a random puzzle when accessed without a query param" in {
