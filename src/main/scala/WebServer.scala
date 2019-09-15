@@ -7,21 +7,35 @@ import data.Puzzle
 
 import scala.util.Random
 
-object WebServer extends HttpApp with DefaultJsonProtocol with SprayJsonSupport {
-  val puzzles: List[Puzzle] = PuzzleLoader.load()
+class WebServer(val puzzles: List[Puzzle]) extends HttpApp with DefaultJsonProtocol with SprayJsonSupport {
+
+  def getQuerySet(maybeQuery: Option[String]): List[Puzzle] = maybeQuery match {
+    case Some(query) =>
+      puzzles.filter { puzzle =>
+        puzzle.title match {
+          case Some(title) => title.toLowerCase().contains(query.toLowerCase())
+          case None => false
+        }
+      }
+    case None => puzzles
+  }
 
   override def routes: Route = cors() {
     concat(
       (pathEndOrSingleSlash & get) {
         complete("hello squirrel")
       },
-      (pathPrefix("puzzles") & pathEndOrSingleSlash & parameter('n.?) & get) { maybeN =>
-        val howMany = maybeN.flatMap(_.toIntOption).getOrElse(1) min 32
-        val picks = for (_ <- 1 to howMany) yield {
-          val puzzle = puzzles(Random.nextInt(puzzles.length))
-          Map("id" -> puzzle.id, "puzzle" -> puzzle.rawText)
-        }
-        complete(picks.toJson)
+      (pathPrefix("puzzles") & pathEndOrSingleSlash & parameters('n.?, 'q.?) & get) {
+        (maybeN, maybeQ) =>
+          val querySet = getQuerySet(maybeQ)
+          val howMany = maybeN.flatMap(_.toIntOption).getOrElse(1) min 32 min querySet.length
+
+          // shuffling the entire list is probably not very efficient, but we need to avoid picking duplicates
+          // maybe revisit this later
+          val picks = Random.shuffle(querySet).take(howMany).map(puzzle =>
+            Map("id" -> puzzle.id, "puzzle" -> puzzle.rawText, "title" -> puzzle.title.getOrElse(""))
+          )
+          complete(picks.toJson)
       },
       (pathPrefix("puzzles") & pathPrefix(Segment) & get) { puzzleId =>
         encodeResponse {
@@ -33,7 +47,10 @@ object WebServer extends HttpApp with DefaultJsonProtocol with SprayJsonSupport 
       })
   }
 
+}
+object WebServer {
   def main(args: Array[String]): Unit = {
-    WebServer.startServer("0.0.0.0", 8080)
+    val puzzles: List[Puzzle] = PuzzleLoader.load()
+    new WebServer(puzzles).startServer("0.0.0.0", 8080)
   }
 }

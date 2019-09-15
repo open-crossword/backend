@@ -1,14 +1,14 @@
 import scala.collection.parallel.CollectionConverters._
 import data.Puzzle
-import java.io.IOException
+import java.io.{IOException, InputStream}
 import java.nio.file.{FileSystems, Files, Path}
 import java.nio.file.StandardCopyOption._
+
 import scala.jdk.CollectionConverters._
 import scala.jdk.StreamConverters._
 
 object PuzzleLoader {
-  def load(): List[data.Puzzle] = {
-    val puzzles = getClass.getResourceAsStream("/puzzles.zip")
+  def load(puzzles: InputStream = getClass.getResourceAsStream("/puzzles.zip")): List[data.Puzzle] = {
     val temp = os.temp().toNIO
     Files.copy(puzzles, temp, REPLACE_EXISTING)
     extractAll(temp)
