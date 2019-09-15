@@ -22,7 +22,8 @@ libraryDependencies ++= Seq(
 
   "ch.megard" %% "akka-http-cors" % "0.4.1",
 
-  "org.slf4j" % "slf4j-simple" % "1.7.27"
+  "org.slf4j" % "slf4j-simple" % "1.7.27",
+  "org.scala-lang.modules" %% "scala-parallel-collections" % "0.2.0"
 )
 
 // ScalaTest
