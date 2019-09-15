@@ -1,4 +1,5 @@
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import akka.http.scaladsl.model.{HttpResponse, StatusCodes}
 import akka.http.scaladsl.server.{HttpApp, Route}
 import spray.json._
 import ch.megard.akka.http.cors.scaladsl.CorsDirectives._
@@ -22,8 +23,13 @@ object WebServer extends HttpApp with DefaultJsonProtocol with SprayJsonSupport 
         }
         complete(picks.toJson)
       },
-      (pathPrefix("puzzles") & get) {
-        complete("unknown1")
+      (pathPrefix("puzzles") & pathPrefix(Segment) & get) { puzzleId =>
+        encodeResponse {
+          puzzles.find(_.id == puzzleId) match {
+            case Some(puzzle) => complete(puzzle.rawText)
+            case None => complete(HttpResponse(status = StatusCodes.NotFound))
+          }
+        }
       })
   }
 

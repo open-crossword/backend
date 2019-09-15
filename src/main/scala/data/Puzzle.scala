@@ -17,6 +17,7 @@ case class Puzzle(title: Option[String],
 
 object Puzzle {
   def parseXd(xdString: String, path: String): Option[Puzzle] = {
+    // really dislike needing to pass the path
     val sections = xdString.split("\n\n")
     val metadataSection = sections.headOption
     metadataSection.flatMap { metadataChunk =>
@@ -33,13 +34,24 @@ object Puzzle {
           map.get("Editor"),
           publicationForPath(path),
           xdString,
-          // Using path as the id seems wrong.
-          // Maybe we should hash xdString, or use an incrementing number.
-          path
+          md5(path) // might be better to try to generate a human-readable ID
         )
       }
     }
   }
+
+  // credit:
+  // https://alvinalexander.com/source-code/scala-method-create-md5-hash-of-string
+  def md5(s: String): String = {
+    import java.security.MessageDigest
+    import java.math.BigInteger
+    val md = MessageDigest.getInstance("MD5")
+    val digest = md.digest(s.getBytes)
+    val bigInt = new BigInteger(1, digest)
+    val hashedString = bigInt.toString(16)
+    hashedString
+  }
+
 
   private def parseDate(value: String): Option[Date] =
     value.split('-') match {
