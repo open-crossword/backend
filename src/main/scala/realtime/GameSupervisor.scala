@@ -13,11 +13,12 @@ object GameSupervisor {
                              gameId: String,
                              replyTo: ActorRef[ActorRef[Game.Command]]) extends Command
 
+  case class GameTerminated(gameId: String) extends Command
+
   val main: Behavior[Command] =
     Behaviors.setup { context =>
       def spawnGame(gameId: String): ActorRef[Game.Command] = {
         context.log.info("GameSupervisor spawning a new game")
-        // todo: pass props
         context.spawn(Game.main(gameId), UUID.randomUUID().toString)
       }
 
@@ -35,9 +36,11 @@ object GameSupervisor {
           // send back the ActorRef so the websocket flow can be created
           replyTo ! game
 
-          // todo: handle termination properly by removing the ActorRef from the map
-//          context.watch(game)
-
+          context.watchWith(game, GameTerminated(gameId))
+          Behaviors.same
+        case GameTerminated(gameId) =>
+          context.log.info(s"GameSupervisor witnessed termination of $gameId")
+          runningGames -= gameId
           Behaviors.same
       }
     }
