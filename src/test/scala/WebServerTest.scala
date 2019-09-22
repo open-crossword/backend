@@ -3,6 +3,7 @@ import akka.http.scaladsl.testkit.ScalatestRouteTest
 import org.scalatest._
 import spray.json._
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import http.WebServer
 
 class WebServerTest extends FlatSpec with Matchers with ScalatestRouteTest with DefaultJsonProtocol with SprayJsonSupport {
   val WebServer = new WebServer(PuzzleLoader.load(getClass.getResourceAsStream("/sample-puzzles-dir.zip")))
